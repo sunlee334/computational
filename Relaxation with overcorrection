@@ -1,0 +1,40 @@
+%matplotlib inline
+
+
+from numpy import empty, zeros, max, set_printoptions
+from pylab import imshow, gray, show
+
+set_printoptions(formatter={'float': '{: 0.2f}'.format})
+
+# Constants
+L = 1.0         # Length of box in meters
+M = 50         # Grid squares on a side
+V = 1.0         # Voltage at top wall
+omega = 0.9      # relaxation parameter
+target = 1.e-6  # Target accuracy
+
+# Create arrays to hold potential values
+phi = zeros([M+1,M+1])
+phi[0,:] = V
+dphi = zeros([M+1,M+1])
+
+# Main loop
+delta = 1.0
+while delta> target:
+    delta = 0
+    # Calculate new values of the potential
+    for i in range(1,M):
+        for j in range(1,M):
+            oldphi = phi[i,j]
+            phi[i,j] = (1+omega)*(phi[i+1,j] + phi[i-1,j] + phi[i,j+1] \
+                       + phi[i,j-1])/4 - omega*phi[i,j]
+            epsilon = abs(phi[i,j]-oldphi)
+            if epsilon > delta:
+                delta = epsilon
+    
+#    # Calculate max change
+#    delta = max(abs(dphi))
+    
+imshow(phi)
+gray()
+show()
