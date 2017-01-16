@@ -1,0 +1,43 @@
+%matplotlib inline
+import numpy as np
+from matplotlib import animation, rc,rcParams
+import matplotlib.pyplot as plt
+import scipy.ndimage.filters
+from IPython.display import clear_output, display
+
+def initialize(x,M):
+    x0 = 0.33
+    y = np.zeros(len(x))
+    y[0:int(M/3)] = x[0:int(M/3)]*3
+    y[int(M/3):] = 1.5 - x[int(M/3):]*3/2
+    y = scipy.ndimage.filters.uniform_filter(y,size=5,mode='constant')
+    return y
+    
+M = 100  # segments of string
+N = 200  # time steps
+c = 300   # m/s
+dx = 1/M
+dt = dx/c
+r2 = (dt * c / dx)**2
+
+x = np.linspace(0,1,M)
+y = np.zeros([M,N])
+t = np.linspace(0,N*dt,N)
+
+y[:,0] = initialize(x,M)
+y[:,1] = y[:,0]
+
+for n in range(1,N-1):
+    for i in range(1,M-1):
+        y[i,n+1] = r2 * (y[i+1,n] + y[i-1,n]) + 2*(1-r2)*y[i,n] - y[i,n-1] 
+
+fig, ax = plt.subplots()
+
+for n in range(1,N-1):
+   ax.plot(x,y[:,n])
+   ax.set_ylim([-1.1,1.1])
+   clear_output(wait=True)
+   display(fig)
+   ax.clear()
+
+plt.close()
