@@ -1,0 +1,70 @@
+# Random walkers in 2D
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+calls = 0
+def randomnumber():
+    global calls
+    calls += 1
+    return np.random.random_sample()
+
+nsteps = 1000   # time steps
+nwalkers = 500  # number of walkers
+pltdomain = 100
+r = np.zeros([nwalkers , 2]) # [x,y]
+
+fig = plt.figure(figsize = (10,15))
+fig.suptitle('Random walk in 2d on a Lattice', size = 16)
+
+# how do you make this the same size as the others (and still centered)?
+ax = fig.add_subplot(311)
+ax.scatter(r[:,0], r[:,1])
+ax.set_title('initial')
+ax.set_xlim(-pltdomain,pltdomain)
+ax.set_ylim(-pltdomain,pltdomain)
+
+for t in range(1,nsteps):
+    # loop over time steps
+    for j in range(nwalkers):
+        # loop over the walkers
+        rand = randomnumber()
+        if rand < 0.25:
+            # step left
+            r[j,0] = r[j,0] - 1
+        elif rand < 0.5:
+            # step right
+            r[j,0] = r[j,0] + 1
+        elif rand < 0.75:
+            # step up
+            r[j,1] = r[j,1] + 1
+        else:
+            # step down
+            r[j,1] = r[j,1] -1
+    if np.abs(t-nsteps/4) < 0.1:
+        ax = fig.add_subplot(3,2,3)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('1/4')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+    if np.abs(t-nsteps/2) < 0.1:
+        ax = fig.add_subplot(3,2,4)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('1/2')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+    if np.abs(t-3*nsteps/4) < 0.1:
+        ax = fig.add_subplot(3,2,5)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('3/4')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+    if t == nsteps -1:
+        ax = fig.add_subplot(3,2,6)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('final')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+            
+plt.show()
+#print(calls)
