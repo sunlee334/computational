@@ -1,0 +1,44 @@
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+RC_arr = [0.01, 0.1, 1.0]
+
+def vin(t):
+    if int(2*t)%2==0:
+        return 1.0
+    else:
+        return -1.0
+        
+def f(vout,t):
+    return (vin(t)-vout)/RC
+    
+# Initialize
+
+a = 0       # start of interval
+b = 10      # end of interval
+N = 1000      # Number of steps
+h = (b-a)/N # step size
+
+for RC in RC_arr:
+    
+    x = 0       # initial condition
+
+    tpoints = np.arange(a,b,h)
+    xpoints = []
+
+    for t in tpoints:
+        xpoints.append(x)
+        k1 = h*f(x,t)
+        k2 = h*f(x+0.5*k1, t+0.5*h)
+        k3 = h*f(x+0.5*k2, t+0.5*h)
+        k4 = h*f(x+k3, t+h)
+        x += (k1 + 2*k2 + 2*k3 + k4)/6
+
+
+    plt.plot(tpoints,xpoints)
+    plt.xlabel("t")
+    plt.ylabel("x")
+    plt.ylim([-1.1,1.1])
+    plt.show()
