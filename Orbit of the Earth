@@ -1,0 +1,80 @@
+%matplotlib inline
+"""
+Exercise 8.12: Orbit of the Earth - Verlet Method
+
+"""
+
+from math import sqrt
+from numpy import array, arange
+from pylab import plot, show,axes,figure
+
+#constants
+G = 6.6738e-11
+M = 1.989e30
+m = 5.9722e24
+
+x0 = 1.5210e11
+y0 = 0.0
+vx0 = 0.0
+vy0 = 2.9291e4
+
+a = 0
+b = 5e7  # one year is pi 10^7
+h = 3600
+
+def mag(r):
+    return sqrt(sum(r*r))
+
+# Right-hand side of the equations
+def f(r):
+    return -G*M*r/mag(r)**3
+
+#Potential ENergy
+def V(r):
+    return -G*M*m/mag(r)
+    
+#Kin Energy Function
+def T(v):
+    return 0.5*m*sum(v*v)
+
+#Initial values
+r = array([x0,y0])
+v = array([vx0,vy0])
+vhalf = v + 0.5*h*f(r)
+
+tpoints = arange(a,b,h)
+xpoints = []
+ypoints = []
+Vpoints = []
+Tpoints = []
+Epoints = []
+
+# Main Loop
+for t in arange(a,b,h):
+    xpoints.append(r[0])
+    ypoints.append(r[1])
+    Vpoints.append(V(r))
+    Tpoints.append(T(v))
+    Epoints.append(V(r)+T(v))
+    
+    r += h*vhalf
+    k = h*f(r)
+    v = vhalf + 0.5*k
+    vhalf += k
+    
+    # here is the Euler Cromer Method
+    # v += h*f(r)
+    # r += h*v
+    
+# make a plot
+
+plot(tpoints,Vpoints)
+plot(tpoints,Tpoints)
+plot(tpoints,Epoints)
+show()
+
+figure(figsize=[8,8])
+axes().set_aspect('equal')
+plot(xpoints,ypoints)
+plot([0,0],[0,0],'ko')
+show()
