@@ -1,0 +1,48 @@
+
+from math import sin,cos,pi,sqrt
+from numpy import array
+from pylab import plot,xlabel,ylabel,show
+
+
+m_arr = [0.1,1,10,100,1000]
+R = 0.08
+v0 = 100
+theta = 30*pi/180.
+rho = 1.22
+C =0.47
+g = 9.81
+
+def f(r,t):
+    vx = r[2]
+    vy = r[3]
+    v = sqrt(vx**2 + vy**2)
+    fx = vx
+    fy = vy
+    fvx =     -pi*R**2*rho*C/(2*m)*vx*v
+    fvy = -g - pi*R**2*rho*C/(2*m)*vy*v
+    return array([fx,fy,fvx,fvy],float) # return vector f
+    
+# Initialize
+
+h = 0.01
+
+for m in m_arr:
+    r = array([0.0,0.0, v0*cos(theta), v0*sin(theta) ])
+    t = 0
+    xpoints = []
+    ypoints = []
+
+    while r[1] >= 0.0:
+        xpoints.append(r[0])
+        ypoints.append(r[1])
+        k1 = h*f(r,t)
+        k2 = h*f(r+0.5*k1, t+0.5*h)
+        k3 = h*f(r+0.5*k2, t+0.5*h)
+        k4 = h*f(r+k3, t+h)
+        r += (k1 + 2*k2 + 2*k3 + k4)/6
+        t += h
+
+    plot(xpoints,ypoints)
+    xlabel("x")
+    ylabel("y")
+show()
