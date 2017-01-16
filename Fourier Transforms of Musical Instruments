@@ -1,0 +1,29 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy.fft import rfft, rfftfreq
+
+p = np.loadtxt("piano.txt")
+N = len(p)
+t = np.loadtxt("trumpet.txt")
+
+cp = rfft(p)
+ct = rfft(t)
+amp_p = abs(cp)*2/N
+amp_t = abs(ct)*2/N
+freqs = rfftfreq(N,1/44100.)
+
+plt.figure(figsize=(10,6))
+plt.plot(p[0:2000],label='Piano')
+plt.plot(t[0:2000],label='Trumpet')
+plt.legend(loc=2)
+plt.show()
+
+plt.figure(figsize=(10,6))
+plt.plot(freqs,amp_p)
+plt.xlim(0,5000)
+plt.show()
+plt.figure(figsize=(10,6))
+plt.plot(freqs,amp_t,'g')
+plt.xlim(0,5000)
+plt.show()
