@@ -1,0 +1,26 @@
+"""
+Hypersphere volume in 1D to 10D
+"""
+
+from numpy.random import random    # random numbers in [0,1)
+from numpy.linalg import norm
+
+npts = 1000000
+
+ndim = 10
+
+def f(x):
+    if norm(x) <= 1:
+        return 1
+    else:
+        return 0
+
+for nd in range(1,ndim+1):
+    sum = 0
+    for i in range(npts):        
+        x = random(nd)
+        sum += f(x)
+        
+    I = 2**nd *sum / npts
+    
+    print("Volume of ",nd,"-dimension hypersphere = ",I)
