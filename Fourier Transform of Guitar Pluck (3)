@@ -1,4 +1,4 @@
-# Now pluck in center, and at M/8
+# pluck in center, and at M/8
 
 %matplotlib inline
 import numpy as np
