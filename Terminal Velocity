@@ -1,0 +1,21 @@
+%matplotlib inline
+from numpy import arange,zeros
+from pylab import plot
+
+a = 0.
+b = 10
+N = 100
+h = (b-a)/N
+acst = 10
+bcst = 1
+
+time = arange(a,b,h)
+v = zeros(len(time))
+
+vinit = [1,50]
+for v0 in vinit:
+    v[0] = v0
+    for i in range(N-1):
+        v[i+1] = v[i] + (acst - bcst * v[i])*h
+
+    plot(time,v)
