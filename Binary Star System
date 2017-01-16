@@ -1,0 +1,85 @@
+Rsun = 7.e8
+Msun = 2.e30
+G = 6.67408e-11
+
+M1 = 1.0*Msun  ; R1 = 1.0*Rsun   # solar
+M2 = 0.5*Msun  ; R2 = 0.5*Rsun   # M dwarf
+
+M = M1+M2
+a = 1.5e11 / 2   # 1/2 AU
+a1 = a*M2/M
+a2 = a*M1/M
+Porb = np.sqrt(4*np.pi**2 / (G*M) * a**3)
+dt = 100
+v1circ = 2 * np.pi * a1 / Porb
+v2circ = 2 * np.pi * a2 / Porb
+v1 = 0.7 * v1circ
+v2 = -v1 * M1/M2
+
+# initialize
+nsteps = int(Porb/dt)
+pos1 = np.zeros([nsteps + 1, 2])
+pos2 = np.zeros([nsteps + 1, 2])
+vel1 = np.zeros([nsteps + 1, 2])
+vel2 = np.zeros([nsteps + 1, 2])
+KE = np.zeros([nsteps])
+PE = np.zeros([nsteps])
+L = np.zeros([nsteps])
+t = np.arange(0,nsteps*dt,dt)
+
+# initial values
+pos1[0,0] = -a1
+pos1[0,1] = 0.0
+vel1[0,0] = 0.0
+vel1[0,1] = v1   
+
+pos2[0,0] = a2
+pos2[0,1] = 0.0
+vel2[0,0] = 0.0
+vel2[0,1] = v2 
+
+for i in range(nsteps):
+    mag_r = norm(pos2[i]-pos1[i])
+    vel1[i+1] = vel1[i] - G*M2*(pos1[i]-pos2[i])/mag_r**3*dt
+    vel2[i+1] = vel2[i] - G*M1*(pos2[i]-pos1[i])/mag_r**3*dt
+    pos1[i+1] = pos1[i] + vel1[i+1]*dt
+    pos2[i+1] = pos2[i] + vel2[i+1]*dt
+    KE[i] = 0.5*M1*norm(vel1[i])**2 + 0.5*M2*norm(vel2[i])**2
+    PE[i] = -G*M1*M2/mag_r
+    L[i] = M1*(np.cross(pos1[i],vel1[i])) + M2*(np.cross(pos2[i],vel2[i]))
+
+pos1 = pos1/1.496e11    # convert to au for plot
+pos2 = pos2/1.496e11
+
+KE = KE/1e41      # into easier number to work with
+PE = PE/1e41
+L = L/1e46
+t = t/3600      # to hours
+    
+fig2 = plt.figure(figsize = (11,5))
+
+
+ax1 = plt.subplot(121)
+ax1.set_aspect('equal')
+ax1.plot(pos1[:,0],pos1[:,1], 'b', label = 'M1')
+ax1.plot(pos2[:,0],pos2[:,1], 'g', label = 'M2')
+ax1.set_xlabel('x distance from center of mass [au]')
+ax1.set_ylabel('y distance from center of mass [au]')
+ax1.set_title('orbital trajectory', size = 12)
+plt.plot([0,0],[0,0],'ko')
+l = plt.legend()
+
+ax2 = plt.subplot(122)
+ax2.plot(t,KE, label = 'kinetic energy')
+ax2.plot(t,PE, label = 'potential energy')
+ax2.plot(t,KE + PE, label = 'total energy')
+ax2.plot(t,L,label = 'angular momentum')
+ax2.set_ylabel(r'energy [$10^{41}$ J] or momentum [$10^{46}$ kg m/s]')
+ax2.set_xlabel('time [s]')
+ax2.set_title('Energy and Angular Momentum', size = 12)
+#ax2.set_ylim(0,45)
+#ax2.set_xlim(0,28)
+l = plt.legend(loc='lower right')
+
+plt.suptitle('M1 = '+str(m1)+'kg; M2 = '+str(m2)+'kg', size = 16 )
+plt.show()
