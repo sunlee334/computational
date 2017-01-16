@@ -1,0 +1,56 @@
+%matplotlib inline
+
+from numpy import arange, zeros, sin
+import matplotlib.pyplot as plt
+from cmath import exp,pi
+
+def dft(y):
+    N = len(y)
+    c = zeros(N//2+1,complex)
+    for k in range(N//2+1):
+        for n in range(N):
+            c[k] += y[n]*exp(-2j*pi*k*n/N)
+    return c
+
+def f_square(x):
+    if x<0.5:
+        return 1
+    else:
+        return -1
+
+def plotit(x,y,c,flag):
+    # Plot time series and DFT side by side
+    plt.figure(figsize = (10,4))
+    ax1 = plt.subplot(121)
+    ax1.plot(x,y)
+    if flag==True:
+        plt.ylim(-1.1,1.1)
+    ax2 = plt.subplot(122)
+    ax2.plot(abs(c))
+    plt.xlim(0,100)
+
+
+N = 1000
+x = arange(0,1,1/N)
+y = zeros(len(x))
+for i in range(len(y)):
+    y[i] = f_square(x[i])
+c = dft(y)
+
+plotit(x,y,c,True)
+
+# Now do 7.1b - Sawtooth Wave
+
+y = arange(N) - N/2
+c = dft(y)
+
+plotit(x,y,c,False)
+
+
+# Now 7.1c - Modulated Sine Wave
+
+y = sin(pi*x)*sin(20*pi*x)
+c = dft(y)
+
+plotit(x,y,c,True)
+
