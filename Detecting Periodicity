@@ -1,0 +1,22 @@
+
+from numpy import loadtxt
+from numpy.fft import rfft, rfftfreq
+import matplotlib.pyplot as plt
+
+def plotit(x,y,amp,freqs):
+    # Plot time series and DFT side by side
+    plt.figure(figsize = (12,6))
+    ax1 = plt.subplot(121)
+    ax1.plot(x,y)
+    ax2 = plt.subplot(122)
+    ax2.plot(freqs,amp)
+    plt.xlim(0,.03)
+    plt.ylim(0,40)
+    
+t,y = loadtxt("sunspots.txt",unpack=True,usecols=(0,1))
+N = len(y)
+c = rfft(y)
+amp = abs(c)*2/N
+freqs = rfftfreq(N,t[1]-t[0])
+
+plotit(t,y,amp,freqs)
