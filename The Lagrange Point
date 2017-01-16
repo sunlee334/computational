@@ -1,0 +1,28 @@
+"""
+Newton's Method
+
+"""
+
+def f(r):
+    return G*M/r**2 - G*m/(R-r)**2 - omega**2*r
+    
+def fprime(r):
+    return -2*G*M/r**3 - 2*G*m/(R-r)**3 - omega**2
+
+# Constants
+G = 6.674e-11
+M = 5.974e24
+m = 7.348e22
+R = 3.844e8
+omega = 2.662e-6
+tol = 1.e-6
+ 
+r = 1.e8
+err = 1
+
+while err>tol:
+    delta = f(r)/fprime(r)
+    r -= delta
+    err = abs(delta)
+
+print("Distance to L1 point = {0:.2e} meters".format(r))
