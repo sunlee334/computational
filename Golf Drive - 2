@@ -1,0 +1,72 @@
+# Golf Ball Trajectory with different spin rates
+
+import numpy as np
+import matplotlib.pylab as plt
+import math as math
+
+def C(v):
+    if v <= 14:
+        return 0.5
+    else:
+        return 7./v
+    
+v_init = 70 # m/s
+g = 9.81
+dt = 0.01
+nsteps = 1100
+theta = 9
+rho = 1.225
+r_golfball = 42.7/2.            # mm for an American golfball
+A = np.pi*(r_golfball/1000.)**2 
+m = 45.93/1000.
+swpm = np.array([0, 0.25, 0.25*1.5])
+
+plt.figure(figsize = (7,7))
+for magnus_constant in swpm:
+    x = np.zeros(nsteps)    
+    y = np.zeros(nsteps)
+    x[0] = 0
+    y[0] = 0
+    v_x = np.zeros(nsteps)
+    v_y = np.zeros(nsteps)
+    v_x[0] = v_init*np.cos(math.radians(theta))
+    v_y[0] = v_init*np.sin(math.radians(theta))
+    for i in range(nsteps - 1):
+        v = np.sqrt(v_x[i]**2+v_y[i]**2)    # magnitude of the velocity at that point
+        v_x[i+1] = v_x[i] - C(v)*A*rho*v*v_x[i]*dt/m - magnus_constant*v_y[i]*dt
+        v_y[i+1] = v_y[i] - g*dt - C(v)*A*rho*v*v_y[i]*dt/m + magnus_constant*v_x[i]*dt
+        x[i+1] = x[i] + v_x[i+1]*dt
+        y[i+1] = y[i] + v_y[i+1]*dt
+    if magnus_constant == 0:
+        plt.plot(x, y, label = 'no spin')
+    elif magnus_constant == 0.25:
+        plt.plot(x, y, label = 'normal drive')
+    else:
+        plt.plot(x, y, label = 'extra backspin')
+        
+# now the smooth ball
+C_smooth = 0.55
+magnus_smooth = 0.25
+x = np.zeros(nsteps)   
+y = np.zeros(nsteps)
+x[0] = 0
+y[0] = 0
+v_x = np.zeros(nsteps)
+v_y = np.zeros(nsteps)
+v_x[0] = v_init*np.cos(math.radians(theta))
+v_y[0] = v_init*np.sin(math.radians(theta))
+for i in range(nsteps - 1):
+    v = np.sqrt(v_x[i]**2+v_y[i]**2)    # magnitude of the velocity at that point
+    v_x[i+1] = v_x[i] - C_smooth*A*rho*v*v_x[i]*dt/m - magnus_smooth*v_y[i]*dt
+    v_y[i+1] = v_y[i] - g*dt - C_smooth*A*rho*v*v_y[i]*dt/m + magnus_smooth*v_x[i]*dt
+    x[i+1] = x[i] + v_x[i]*dt
+    y[i+1] = y[i] + v_y[i]*dt
+plt.plot(x, y, label = 'smooth ball')
+    
+plt.legend(loc = 'upper left')
+plt.xlabel('x [m]', size = 12)
+plt.ylabel('y [m]', size = 12)
+plt.title('different spin rates', size = 16)
+plt.ylim(0,80) 
+plt.xlim(0,225)
+plt.show()
