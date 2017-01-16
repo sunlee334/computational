@@ -1,0 +1,64 @@
+"""
+Exercise 9.3: Capacitor in a box
+
+"""
+
+from numpy import empty, zeros, max,linspace,meshgrid,gradient
+from pylab import imshow, gray, show,cm
+import matplotlib.pyplot as plt
+
+
+# Constants
+L = 0.1         # Length of box in meters
+M = 100         # Grid squares on a side
+a = L/M
+clo = M//5
+chi = 4*M//5
+
+omega = 0.9      # relaxation parameter
+target = 1.e-6  # Target accuracy
+
+# Create arrays to hold potential values
+phi = zeros([M+1,M+1])
+phi[clo:chi,clo] = +1.0
+phi[clo:chi,chi] = -1.0
+dphi = empty([M+1,M+1],float)
+
+plates = zeros([M+1,M+1],int)
+plates[clo:chi,clo] = 1
+plates[clo:chi,chi] = 1
+
+# Main loop
+delta = 1.0
+while delta> target:
+    delta = 0
+    # Calculate new values of the potential
+    for i in range(1,M):
+        for j in range(1,M):
+            if plates[i,j]==0:
+                oldphi = phi[i,j]
+                phi[i,j] = (1+omega)*(phi[i+1,j] + phi[i-1,j] + phi[i,j+1] \
+                           + phi[i,j-1])/4 - omega*phi[i,j]
+                epsilon = abs(phi[i,j]-oldphi)
+                if epsilon > delta:
+                    delta = epsilon
+        
+    
+imshow(phi)
+gray()
+show()
+
+# Now plot electric field
+
+
+x = linspace(-1,1,M+1)
+y = linspace(-1,1,M+1)
+x, y = meshgrid(x,y)
+
+Ey, Ex = gradient(-phi)
+
+fig, ax = plt.subplots()
+ax.quiver(x, y, Ex, Ey, phi)
+ax.set(aspect=1, title='Electric Field')
+plt.axis([-1.05,1.05,-1.05,1.05])
+plt.show()
