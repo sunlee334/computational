@@ -1,0 +1,56 @@
+# Now do 100 cycles.
+
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.ndimage.filters
+
+def initialize(x,M):
+    x0 = 0.33
+    y = np.zeros(len(x))
+    y[0:int(M/3)] = x[0:int(M/3)]*3
+    y[int(M/3):] = 1.5 - x[int(M/3):]*3/2
+    y = scipy.ndimage.filters.uniform_filter(y,size=5,mode='constant')
+    return y
+
+Ncycles = 100
+M = 100  # segments of string
+N = 200*Ncycles  # time steps
+c = 300   # m/s
+dx = 1/M
+dt = dx/c
+r2 = (dt * c / dx)**2
+
+x = np.linspace(0,1,M)
+y = np.zeros([M,N])
+t = np.linspace(0,N*dt,N)
+
+y[:,0] = initialize(x,M)
+y[:,1] = y[:,0]
+
+for n in range(1,N-1):
+    for i in range(1,M-1):
+        y[i,n+1] = r2 * (y[i+1,n] + y[i-1,n]) + 2*(1-r2)*y[i,n] - y[i,n-1] 
+
+y_pickup = y[int(M/8),:]
+fft_amp = np.abs(np.fft.rfft(y_pickup))*2/len(y_pickup)
+fft_freq = np.fft.rfftfreq(len(y_pickup), dt)
+
+fig = plt.figure(figsize = (15,5))
+plt.suptitle('Pickup at M/8', size = 16)
+
+ax1 = fig.add_subplot(1,2,1)
+ax1.plot(t,y_pickup)
+ax1.set_title('Pickup')
+ax1.set_ylabel('Displacement')
+ax1.set_xlabel('time')
+
+
+ax3 = fig.add_subplot(1,2,2)
+ax3.plot(fft_freq, fft_amp)
+ax3.set_xlabel('frequency')
+ax3.set_ylabel('amplitude [arbitrary units]')
+ax3.set_title('zoomed in FFT')
+ax3.set_xlim(0,2000)
+
+plt.show()
