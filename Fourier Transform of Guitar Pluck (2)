@@ -1,4 +1,4 @@
-# Now do 100 cycles.
+# 100 cycles.
 
 %matplotlib inline
 import numpy as np
