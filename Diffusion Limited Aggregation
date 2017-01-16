@@ -1,0 +1,62 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy.random import rand,randint    # single random numbers in [0,1)
+
+def ctest(x,y,c):
+    if c[x+1,y]==1 or c[x-1,y]==1 or c[x,y-1]==1 or c[x,y+1]==1:
+        return True
+        
+def cluster_size(c):
+    x,y = np.nonzero(c)
+    return max(y)+5
+
+def start_walk(c_size):
+    #x = int(rand()*ngrid/2+mid/2)   # Middle 1/2
+    x = int(randint(5,ngrid-5))
+    y = c_size
+    return x, y
+    
+plt.figure(figsize=[6,6])
+plt.ion()
+
+nsteps = 100000
+nwalkers = 5000
+ngrid = 201
+mid = int(ngrid/2)
+pltlim = 200
+
+c = np.zeros([ngrid,ngrid],dtype='int')
+c[:,0] = 1
+
+for j in range(nwalkers):
+    
+    c_size = cluster_size(c)
+    x,y = start_walk(c_size)
+    #print('init: ',x,y)
+    ystart = y
+
+    for i in range(nsteps):
+        draw = rand()
+        if draw<0.25:
+            x += 1
+        elif draw<0.5:
+            x -= 1
+        elif draw<0.75:
+            y += 1
+        else:
+            y -= 1
+        #print(x,y)
+        if y>ngrid-2 or x < 2 or x > ngrid-5 or y>1.5*ystart:
+            break          # walker wandered too far, start new one.
+        if ctest(x,y,c):   # Particle sticks to cluster!
+            c[x,y] = 1
+            #plt.clf()
+            #plt.scatter(x,y,color="b",s=4)
+            xc,yc = np.nonzero(c)
+            #plt.scatter(xc,yc,color="k",s=4)
+            #plt.axis([0,ngrid,-1,ngrid])
+            #plt.draw()
+            break          # time to start next walker
+
+plt.scatter(xc,yc,s=1)
+plt.show()
