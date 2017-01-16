@@ -1,0 +1,52 @@
+%matplotlib inline
+
+"""
+Problem 1: Wave on a string with free ends
+
+Note: The animation code is optional.
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import animation, rc,rcParams
+from IPython.display import clear_output, display
+
+def initialize(x):
+    x0 = 0.3
+    k  = 1000 # m^-2
+    y = np.exp(-k*(x-x0)**2)
+    return y
+    
+M = 100  # segments of string
+N = 200  # time steps
+c = 300   # m/s
+dx = 1/M
+dt = dx/c
+r2 = (dt * c / dx)**2
+
+x = np.linspace(0,1,M)
+y = np.zeros([M,N])
+t = np.linspace(0,N*dt,N)
+
+y[:,0] = initialize(x)
+y[:,1] = y[:,0]
+
+for n in range(1,N-1):
+    for i in range(0,M):
+        if i == 0:          # the left side of sting
+            y[i, n+1] = r2*(y[i+1,n] + y[i,n]) + 2*(1-r2)*y[i,n] - y[i, n-1]
+        elif i == M-1:        # the right side of string
+            y[i, n+1] = r2*(y[i,n] + y[i-1,n]) + 2*(1-r2)*y[i,n] - y[i, n-1]
+        else:               # all the other points
+            y[i, n+1] = r2*(y[i+1,n] + y[i-1,n]) + 2*(1-r2)*y[i,n] - y[i, n-1]
+
+
+fig, ax = plt.subplots()
+
+for n in range(1,N-1):
+   ax.plot(x,y[:,n])
+   ax.set_ylim([-0.1,1.1])
+   clear_output(wait=True)
+   display(fig)
+   ax.clear()
+
+plt.close()
