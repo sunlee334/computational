@@ -1,6 +1,6 @@
 %matplotlib inline
 """
-Exercise 8.12: Orbit of the Earth - Verlet Method
+Orbit of the Earth - Verlet Method
 
 """
 
