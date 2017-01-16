@@ -1,0 +1,66 @@
+
+%matplotlib inline
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def distfunc(x):
+    y = np.exp(-x)
+    return y
+
+max_val = 5
+min_val = 0
+
+N = 1000  # number of points
+x = np.empty(N)
+max_y = distfunc(min_val)
+
+# first do the 100 draws
+tries = 0
+count = 0
+while count < N:
+    x_val = np.random.random_sample()*(max_val - min_val) + min_val    
+    y_val = np.random.random_sample()*max_y
+    y_test = distfunc(x_val)
+    tries += 1
+    if y_val < y_test:
+        x[count] = x_val
+        count += 1
+
+# now do 1e6 draws       
+N2 = 1e6
+x2 = np.empty(N2)
+ㅁ
+tries2 = 0
+count2 = 0
+while count2 < N2:
+    x_val = np.random.random_sample()*(max_val - min_val) + min_val
+    y_val = np.random.random_sample()*max_y
+    y_test = distfunc(x_val)
+    tries2 +=1
+    if y_val < y_test:
+        x2[count2] = x_val
+        count2 +=1
+
+analytic_x = np.arange(min_val, max_val+0.5, 0.1)
+A = 1/(np.exp(-min_val)-np.exp(-max_val))
+analytic_y = distfunc(analytic_x)
+
+fig = plt.figure(figsize = (10,5))
+fig.suptitle('Rejection Method', size = 16)
+
+ax1 = fig.add_subplot(121)
+ax1.hist(x, bins=10, normed=True)
+ax1.set_xlim(min_val,max_val)
+ax1.plot(analytic_x,analytic_y)
+ax1.set_title('N = 1000 draws')
+
+ax2 = fig.add_subplot(122)
+ax2.hist(x2, bins = 100, normed=True)
+ax2.set_xlim(min_val, max_val)
+ax2.plot(analytic_x, analytic_y)
+ax2.set_title('N = 1e6 draws')
+
+plt.show()
+print('the % kept for n = ',N, ' is ',round(N/tries*100,2))
+print('the % kept for n = ',N2, ' is ',round(N2/tries2*100,2))
