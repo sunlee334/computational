@@ -1,0 +1,36 @@
+
+%matplotlib inline
+
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy.fft import rfft,irfft
+
+y = np.loadtxt("dow.txt")
+
+c = rfft(y)
+Nc = len(c)
+c[int(Nc/10.):] = 0
+y_sm = irfft(c)
+
+plt.figure(figsize=(10,6))
+plt.plot(y,label='orig')
+plt.plot(y_sm,label='smoothed')
+plt.title('Fourier Filtering')
+plt.xlabel('days')
+plt.ylabel('DOW closing value')
+plt.legend()
+plt.show()
+
+# Now smooth more dramatically
+
+c[int(Nc/50.):] = 0
+y_sm = irfft(c)
+
+plt.figure(figsize=(10,6))
+plt.plot(y,label='orig')
+plt.plot(y_sm,label='smoothed')
+plt.title('Fourier Filtering with Extra Smoothing')
+plt.xlabel('days')
+plt.ylabel('DOW closing value')
+plt.legend()
+plt.show()
