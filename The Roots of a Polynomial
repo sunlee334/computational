@@ -1,0 +1,33 @@
+
+from numpy import linspace, array
+from matplotlib.pyplot import plot,show
+
+def f(x):  #the polynomial
+    return 924*x**6 - 2772*x**5 + 3150*x**4 - 1680*x**3 + 420*x**2 - 42*x + 1
+
+def fx(x):  # derivative of the polynomial
+    return 5544*x**5 - 13860*x**4 + 12600*x**3 - 5040*x**2 + 840*x - 42
+    
+x1 = linspace(0,1.,1000)
+y1 = f(x1)
+
+plot(x1,y1)
+plot([0,1],[0,0])
+show()
+
+# Tolerance and initial error
+tol = 1.e-11
+err = 1
+
+# Initial Guesses
+x = array([0.05,.15,.4,.6,.8,.95])
+
+while err > tol:
+    delta = f(x)/fx(x)
+    x -= delta
+    err = max(abs(delta))
+
+print("\nRoots of the polynomial:\n")
+# Print results
+for i in range(len(x)):
+    print("x[",i,"] = ",x[i],sep="")
