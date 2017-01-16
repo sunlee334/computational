@@ -1,0 +1,127 @@
+# Random walkers in 2D
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+calls = 0
+def randomnumber():
+    global calls
+    calls += 1
+    return np.random.random_sample()
+
+def entropy(r, ncells = 16):
+    global pltdomain
+    global nwalkers
+    nx = np.sqrt(ncells) 
+    ny = np.sqrt(ncells)
+    r = r + pltdomain    # shift it
+    ix = ((r[:,0])/(2*pltdomain))*nx
+    ix = ix.astype(int)
+    iy = ((r[:,1])/(2*pltdomain))*ny
+    iy = iy.astype(int)
+    icell = ix + iy*ny
+    s = 0
+    for j in range(ncells):
+        cellcount = len(icell[icell == j])
+        p = cellcount/nwalkers
+        if p > 0:
+            s += -p*np.log2(p)
+    return s 
+    
+nsteps = 1000   # time steps
+nwalkers = 500  # number of walkers
+pltdomain = 100
+r = np.zeros([nwalkers , 2]) # [x,y]
+
+fig = plt.figure(figsize = (10,15))
+fig.suptitle('Random walk in 2d on a Lattice', size = 16, fontweight = 'bold')
+
+ax = fig.add_subplot(311)
+s = entropy(r)
+ax.scatter(r[:,0], r[:,1])
+ax.set_title('initial')
+ax.set_xlim(-pltdomain,pltdomain)
+ax.set_ylim(-pltdomain,pltdomain)
+ax.plot([-pltdomain, pltdomain], [50,50], 'r')
+ax.plot([-pltdomain, pltdomain], [0,0], 'r')
+ax.plot([-pltdomain, pltdomain], [-50,-50], 'r')
+ax.plot([50,50], [-pltdomain,pltdomain], 'r')
+ax.plot([0,0], [-pltdomain,pltdomain], 'r')
+ax.plot([-50,-50], [-pltdomain,pltdomain] , 'r')
+ax.text(0,-75, 's = '+str(round(s,2)), fontweight = 'bold')
+
+for t in range(1,nsteps):
+    # loop over time steps
+    for j in range(nwalkers):
+        # loop over the walkers
+        rand = randomnumber()
+        if rand < 0.25:
+            # step left
+            r[j,0] = r[j,0] - 1
+        elif rand < 0.5:
+            # step right
+            r[j,0] = r[j,0] + 1
+        elif rand < 0.75:
+            # step up
+            r[j,1] = r[j,1] + 1
+        else:
+            # step down
+            r[j,1] = r[j,1] -1
+    if np.abs(t-nsteps/4) < 0.1:
+        s = entropy(r)
+        ax = fig.add_subplot(3,2,3)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('1/4')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+        ax.plot([-pltdomain, pltdomain], [50,50], 'r')
+        ax.plot([-pltdomain, pltdomain], [0,0], 'r')
+        ax.plot([-pltdomain, pltdomain], [-50,-50], 'r')
+        ax.plot([50,50], [-pltdomain,pltdomain], 'r')
+        ax.plot([0,0], [-pltdomain,pltdomain], 'r')
+        ax.plot([-50,-50], [-pltdomain,pltdomain] , 'r')
+        ax.text(0,-75, 's = '+str(round(s,2)), fontweight = 'bold')
+    if np.abs(t-nsteps/2) < 0.1:
+        s = entropy(r)
+        ax = fig.add_subplot(3,2,4)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('1/2')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+        ax.plot([-pltdomain, pltdomain], [50,50], 'r')
+        ax.plot([-pltdomain, pltdomain], [0,0], 'r')
+        ax.plot([-pltdomain, pltdomain], [-50,-50], 'r')
+        ax.plot([50,50], [-pltdomain,pltdomain], 'r')
+        ax.plot([0,0], [-pltdomain,pltdomain], 'r')
+        ax.plot([-50,-50], [-pltdomain,pltdomain] , 'r')
+        ax.text(0,-75, 's = '+str(round(s,2)), fontweight = 'bold')
+    if np.abs(t-3*nsteps/4) < 0.1:
+        s = entropy(r)
+        ax = fig.add_subplot(3,2,5)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('3/4')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+        ax.plot([-pltdomain, pltdomain], [50,50], 'r')
+        ax.plot([-pltdomain, pltdomain], [0,0], 'r')
+        ax.plot([-pltdomain, pltdomain], [-50,-50], 'r')
+        ax.plot([50,50], [-pltdomain,pltdomain], 'r')
+        ax.plot([0,0], [-pltdomain,pltdomain], 'r')
+        ax.plot([-50,-50], [-pltdomain,pltdomain] , 'r')
+        ax.text(0,-75, 's = '+str(round(s,2)), fontweight = 'bold')
+    if t == nsteps -1:
+        s = entropy(r)
+        ax = fig.add_subplot(3,2,6)
+        ax.scatter(r[:,0],r[:,1])
+        ax.set_title('final')
+        ax.set_xlim(-pltdomain,pltdomain)
+        ax.set_ylim(-pltdomain,pltdomain)
+        ax.plot([-pltdomain, pltdomain], [50,50], 'r')
+        ax.plot([-pltdomain, pltdomain], [0,0], 'r')
+        ax.plot([-pltdomain, pltdomain], [-50,-50], 'r')
+        ax.plot([50,50], [-pltdomain,pltdomain], 'r')
+        ax.plot([0,0], [-pltdomain,pltdomain], 'r')
+        ax.plot([-50,-50], [-pltdomain,pltdomain] , 'r')
+        ax.text(0,-75, 's = '+str(round(s,2)), fontweight = 'bold')
+            
+plt.show()
