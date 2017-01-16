@@ -1,0 +1,31 @@
+# This is one possible solution
+
+%matplotlib inline
+from numpy import arange,zeros
+from pylab import plot,show,legend
+
+a = 0.
+b = 5
+N = 100
+h = (b-a)/N
+tau_A = 1
+tau_B = [.2,1,5]
+N_A0 = 100
+N_B0 = 0
+
+time = arange(a,b,h)
+N_A = zeros(len(time))
+N_B = zeros(len(time))
+
+N_A[0] = N_A0
+N_B[0] = N_B0
+
+for tauB in tau_B:
+    for i in range(N-1):
+        N_A[i+1] = N_A[i] - (N_A[i]/tau_A)*h
+        N_B[i+1] = N_B[i] + (N_A[i]/tau_A - N_B[i]/tauB)*h
+
+    plot(time,N_A,label='N_A')
+    plot(time,N_B,label='N_B')
+    legend()
+    show()
